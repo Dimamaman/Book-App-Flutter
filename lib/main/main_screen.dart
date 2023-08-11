@@ -20,7 +20,8 @@ enum Status { initial, loading, fail, success }
 class _Main_ScreenState extends State<Main_Screen> {
   final api = BookApi();
   final pref = BookPRef();
-  var list = [];
+  var _allBooks = [];
+  var _foundBooks = [];
   var status = Status.initial;
   bool _iconBool = true;
 
@@ -29,6 +30,11 @@ class _Main_ScreenState extends State<Main_Screen> {
   @override
   void initState() {
     _loadData();
+    // _foundBooks = _allBooks;
+    _searchController.addListener(() {
+      _runFilter(_searchController.text);
+    });
+
     super.initState();
   }
 
@@ -44,12 +50,28 @@ class _Main_ScreenState extends State<Main_Screen> {
     status = Status.loading;
     setState(() {});
     try {
-      list = await api.getList();
+      _allBooks = await api.getList();
+      _foundBooks = _allBooks;
       status = Status.success;
     } catch (e) {
       status = Status.fail;
     }
     setState(() {});
+  }
+
+  void _runFilter(String searchValue) {
+    var results = [];
+
+    if(searchValue.isEmpty) {
+      results = _allBooks;
+    } else {
+      results = _allBooks.where((element) => element['name'].toString().toLowerCase().contains(searchValue.toLowerCase()) ||
+          element['author'].toString().toLowerCase().contains(searchValue.toLowerCase())).toList();
+    }
+
+    setState(() {
+      _foundBooks = results;
+    });
   }
 
   /*final Map<int, Color> _yellow700Map = {
@@ -72,6 +94,7 @@ class _Main_ScreenState extends State<Main_Screen> {
 
   ThemeData _darkTheme =
       ThemeData(primarySwatch: Colors.grey, brightness: Brightness.dark);
+  FocusNode _focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -115,10 +138,19 @@ class _Main_ScreenState extends State<Main_Screen> {
                   ),
                   child: TextField(
                     controller: _searchController,
+                    focusNode: _focusNode,
                     decoration: InputDecoration(
                       focusedBorder: InputBorder.none,
                       enabledBorder: InputBorder.none,
-                      suffixIcon: Icon(Icons.mic, color: Color(0xFFC4C4C4)),
+                      suffixIcon: _searchController.text.length > 0 ? IconButton(onPressed: () {
+                            _searchController.clear();
+                            setState(() {});
+                        },
+                          icon: Icon(
+                            Icons.cancel,
+                            color: Colors.grey,
+                          )
+                      ): null,
                       hintText: 'Search',
                       prefixIcon: Icon(Icons.search, color: Color(0xFFC4C4C4)),
                       hintStyle: TextStyle(
@@ -185,8 +217,14 @@ class _Main_ScreenState extends State<Main_Screen> {
                       );
                     }
 
+                    if(_foundBooks.isEmpty) {
+                      return const Center(
+                        child: Text("Kitob topilmadi", style: TextStyle(fontSize: 22)),
+                      );
+                    }
+
                     return GridView.builder(
-                      itemCount: list.length,
+                      itemCount: _foundBooks.length,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
@@ -195,14 +233,14 @@ class _Main_ScreenState extends State<Main_Screen> {
                         childAspectRatio: 0.55,
                       ),
                       itemBuilder: (BuildContext context, int index) {
-                        final model = list[index];
+                        final model = _foundBooks[index];
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context) {
                               return DetailScreen(id: model['id']);
                             }));
-
+                            _focusNode.unfocus();
                             // _searchController.dispose();
                           },
                           child: Column(
