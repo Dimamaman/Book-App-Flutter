@@ -31,6 +31,7 @@ class _Main_ScreenState extends State<Main_Screen> {
   void initState() {
     _loadData();
     // _foundBooks = _allBooks;
+
     _searchController.addListener(() {
       _runFilter(_searchController.text);
     });
