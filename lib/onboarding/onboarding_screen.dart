@@ -1,6 +1,6 @@
 import 'package:book_app_flutter/boardModel/board_model.dart';
 import 'package:book_app_flutter/constants/constants.dart';
-import 'package:book_app_flutter/main/main.dart';
+import 'package:book_app_flutter/main/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

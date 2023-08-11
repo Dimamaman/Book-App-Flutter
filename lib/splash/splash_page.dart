@@ -1,4 +1,4 @@
-import 'package:book_app_flutter/main/main.dart';
+import 'package:book_app_flutter/main/main_screen.dart';
 import 'package:book_app_flutter/splash/splash_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

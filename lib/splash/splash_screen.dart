@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:book_app_flutter/main/main.dart';
+import 'package:book_app_flutter/main/main_screen.dart';
 import 'package:book_app_flutter/onboarding/onboarding_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +36,7 @@ class _Splash_ScreenState extends State<Splash_Screen> {
           CupertinoPageRoute(
               builder: (context) => isFirst == null || isFirst == true
                   ? OnBoarding_Screen()
-                  : const Main_Screen()));
+                  :  Main_Screen()));
     });
     super.initState();
   }

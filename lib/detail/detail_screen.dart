@@ -4,6 +4,7 @@ import 'package:book_app_flutter/core/api/book_api.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:book_app_flutter/pdf/pdf_page.dart';
 
 class DetailScreen extends StatefulWidget {
 
@@ -57,7 +58,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
   Future<void> onDownload() async {
     if (hasPdf) {
-      //Navigator.push(context, MaterialPageRoute(builder: (context) => ,),);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => PdfPage(path: path)),);
       return;
     }
     await Dio().download(
