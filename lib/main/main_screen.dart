@@ -155,7 +155,7 @@ class _Main_ScreenState extends State<Main_Screen> {
                             color: Colors.grey,
                           )
                       ): null,
-                      hintText: 'Search',
+                      hintText: 'Book name or author...',
                       prefixIcon: Icon(Icons.search, color: Color(0xFFC4C4C4)),
                       hintStyle: TextStyle(
                         color: Color(0xFFC4C4C4),
