@@ -36,12 +36,15 @@ class _Main_ScreenState extends State<Main_Screen> {
       _runFilter(_searchController.text);
     });
 
+
     super.initState();
   }
 
   @override
   void dispose() {
+
     _searchController.dispose();
+
     super.dispose();
   }
 
