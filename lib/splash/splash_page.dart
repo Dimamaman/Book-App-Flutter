@@ -20,14 +20,14 @@ class _SplashState extends State<Splash> {
   }
   Future<void> load() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
-    isFirst = pref.getBool('isFirst')!;
+    isFirst = pref.getBool('isOpened')!;
   }
 
   @override
   void initState() {
     load();
     next().then((value) {
-      Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context) => isFirst==null||isFirst == true ? Splash_Screen() : const Main_Screen()));
+      Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context) => isFirst==null||isFirst == true ? Splash_Screen() : Main_Screen()));
     });
     super.initState();
   }

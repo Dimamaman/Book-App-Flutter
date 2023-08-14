@@ -23,7 +23,7 @@ class _Main_ScreenState extends State<Main_Screen> {
   var _allBooks = [];
   var _foundBooks = [];
   var status = Status.initial;
-  bool _iconBool = true;
+  bool _iconBool = false;
 
   var _searchController = TextEditingController();
 
@@ -104,7 +104,7 @@ class _Main_ScreenState extends State<Main_Screen> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: _iconBool ? _lightTheme : _darkTheme,
+      theme: _iconBool ? _darkTheme : _lightTheme,
       home: Scaffold(
         appBar: AppBar(),
         body: SafeArea(
@@ -132,7 +132,7 @@ class _Main_ScreenState extends State<Main_Screen> {
                 ),
                 const SizedBox(height: 20),
                 Container(
-                  height: 50,
+                  height: 45,
                   width: double.infinity,
                   decoration: ShapeDecoration(
                     color: Colors.grey[200],
@@ -296,8 +296,8 @@ class _Main_ScreenState extends State<Main_Screen> {
                   ),
                   child: Image.asset('assets/images/drawer_icon.jpeg')),
               ListTile(
-                leading: Icon(Icons.wb_sunny),
-                title: Text('Light Mode'),
+                leading: Icon(Icons.nights_stay),
+                title: Text('Dark Mode'),
                 onTap: () {
                   _iconBool = true;
                   pref.setMode(true);
@@ -307,8 +307,8 @@ class _Main_ScreenState extends State<Main_Screen> {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.nights_stay),
-                title: Text('Dark Mode'),
+                leading: Icon(Icons.wb_sunny),
+                title: Text('Light Mode'),
                 onTap: () {
                   _iconBool = false;
                   pref.setMode(true);

@@ -125,9 +125,9 @@ class _OnBoarding_ScreenState extends State<OnBoarding_Screen> {
                       borderRadius: BorderRadius.circular(100),
                     ),
                   ),
-                  child: const Text(
-                    'Next',
-                    style: TextStyle(
+                  child:  Text(
+                    index >= 1.5 ? "Start" : 'Next',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 17,
                       fontFamily: 'Montserrat',
