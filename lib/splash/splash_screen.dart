@@ -2,9 +2,12 @@ import 'dart:async';
 
 import 'package:book_app_flutter/main/main_screen.dart';
 import 'package:book_app_flutter/onboarding/onboarding_screen.dart';
+import 'package:book_app_flutter/pref/my_shared_pref.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../pref/book_pref.dart';
 
 class Splash_Screen extends StatefulWidget {
   bool isFirst = false;
@@ -16,29 +19,29 @@ class Splash_Screen extends StatefulWidget {
 }
 
 class _Splash_ScreenState extends State<Splash_Screen> {
-  bool? isFirst;
-
-  Future<void> next() async {
-    await Future.delayed(const Duration(milliseconds: 2000));
-  }
-
-  Future<void> load() async {
-    final SharedPreferences pref = await SharedPreferences.getInstance();
-    isFirst = pref.getBool('isOpened')!;
-  }
+  final pref = MySharedPref();
 
   @override
   void initState() {
-    load();
-    next().then((value) {
-      Navigator.pushReplacement(
-          context,
-          CupertinoPageRoute(
-              builder: (context) => isFirst == null || isFirst == true
-                  ? OnBoarding_Screen()
-                  :  Main_Screen()));
-    });
     super.initState();
+    navigateToNextScreen();
+  }
+
+  void navigateToNextScreen() {
+    Future.delayed(const Duration(milliseconds: 1500), () async {
+      var isFirst = await pref.getBool();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) {
+          if (isFirst) {
+            print("ifge kirdi");
+            return OnBoarding_Screen();
+          } else
+            print("elsde kirdi");
+            return Main_Screen();
+        }), // Replace 'IntroPage()' with the actual instantiation of your Intro page
+      );
+    });
   }
 
   @override
@@ -66,15 +69,5 @@ class _Splash_ScreenState extends State<Splash_Screen> {
         ),
       ),
     );
-  }
-
-  void _loadData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool isSubscribed = prefs.getBool('isOpened') ?? true;
-
-    print("Barma? -> $isSubscribed");
-
-    isFirst = isSubscribed;
-    setState(() {});
   }
 }

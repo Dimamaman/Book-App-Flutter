@@ -28,4 +28,23 @@ class BookPRef {
     return _prefs?.getBool('mode') ?? false;
   }
 
+  static final BookPRef _instance = BookPRef._internal();
+
+  factory BookPRef() {
+    return _instance;
+  }
+
+  BookPRef._internal();
+
+  Future<void> init() async {
+    _prefs = await SharedPreferences.getInstance();
+  }
+
+  bool getBool() {
+    return _prefs?.getBool('isFirst') ?? true;
+  }
+
+  Future<void> setBool(bool value) async {
+    await _prefs?.setBool('isFirst', value);
+  }
 }

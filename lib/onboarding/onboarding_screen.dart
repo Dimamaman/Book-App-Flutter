@@ -1,8 +1,11 @@
 import 'package:book_app_flutter/boardModel/board_model.dart';
 import 'package:book_app_flutter/constants/constants.dart';
 import 'package:book_app_flutter/main/main_screen.dart';
+import 'package:book_app_flutter/pref/my_shared_pref.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../pref/book_pref.dart';
 
 class OnBoarding_Screen extends StatefulWidget {
   const OnBoarding_Screen({super.key});
@@ -15,6 +18,10 @@ class _OnBoarding_ScreenState extends State<OnBoarding_Screen> {
   final controller = PageController();
   var index = 0.0;
   SharedPreferences?  prefs;
+
+  final pref = MySharedPref();
+
+  BookPRef sharedPreferencesManager = BookPRef();
 
   Future<void> load() async {
     prefs = await SharedPreferences.getInstance();
@@ -61,7 +68,9 @@ class _OnBoarding_ScreenState extends State<OnBoarding_Screen> {
 
               GestureDetector(
                 onTap: () {
-                  prefs?.setBool("isOpened", false);
+                  // prefs?.setBool("isOpened", false);
+                  // sharedPreferencesManager.setBool(false);
+                  pref.setBool(false);
                   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Main_Screen()));
                 },
                 child: Text(
@@ -106,7 +115,9 @@ class _OnBoarding_ScreenState extends State<OnBoarding_Screen> {
               GestureDetector(
                 onTap: () {
                   if(index == 2) {
-                    prefs?.setBool("isOpened", false);
+                    // prefs?.setBool("isOpened", false);
+                    // sharedPreferencesManager.setBool(false);
+                    pref.setBool(false);
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Main_Screen()));
                   } else {
                     controller.nextPage(
