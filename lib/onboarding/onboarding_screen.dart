@@ -4,7 +4,7 @@ import 'package:book_app_flutter/main/main_screen.dart';
 import 'package:book_app_flutter/pref/my_shared_pref.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:get/get.dart';
 import '../pref/book_pref.dart';
 
 class OnBoarding_Screen extends StatefulWidget {
@@ -70,8 +70,11 @@ class _OnBoarding_ScreenState extends State<OnBoarding_Screen> {
                 onTap: () {
                   // prefs?.setBool("isOpened", false);
                   // sharedPreferencesManager.setBool(false);
-                  pref.setBool(false);
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Main_Screen()));
+                  // pref.setBool(true);
+                  // sharedPreferencesManager.setBool(false);
+                  // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Main_Screen()));
+                  prefs?.setBool('isFirst', false);
+                  Get.offNamed('/main');
                 },
                 child: Text(
                   index >= 1.5 ? "" : 'Skip',
@@ -115,10 +118,10 @@ class _OnBoarding_ScreenState extends State<OnBoarding_Screen> {
               GestureDetector(
                 onTap: () {
                   if(index == 2) {
-                    // prefs?.setBool("isOpened", false);
-                    // sharedPreferencesManager.setBool(false);
-                    pref.setBool(false);
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Main_Screen()));
+                    // pref.setBool(true);
+                    // Navigator.pushNamed(context, '/main');
+                    prefs?.setBool('isFirst', false);
+                    Get.offNamed('/main');
                   } else {
                     controller.nextPage(
                       duration: const Duration(milliseconds: 300),

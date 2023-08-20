@@ -25,7 +25,7 @@ class _SplashState extends State<Splash> {
   void initState() {
     load();
     next().then((value) {
-      isFirst == true ? Get.offNamed('/onboard') : Get.offNamed('/home');
+      isFirst == true ? Get.offNamed('/onboard') : Get.offNamed('/main');
     });
     super.initState();
   }
@@ -36,7 +36,23 @@ class _SplashState extends State<Splash> {
       body: Center(
         child: SizedBox(
           height: 200,
-            child: Image.asset('assets/images/splash.png')
+            child: Column(
+              children: [
+                Image.asset('assets/images/splash_image.png'),
+                SizedBox(height: 20,),
+                const Text(
+                  'INFINITY',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFF223263),
+                    fontSize: 40,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.20,
+                  ),
+                ),
+              ],
+            )
         ),
       ),
     );

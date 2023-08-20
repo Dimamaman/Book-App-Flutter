@@ -1,10 +1,13 @@
+import 'package:book_app_flutter/core/api/book_model.dart';
 import 'package:book_app_flutter/detail/detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:book_app_flutter/pref/book_pref.dart';
 
 import '../core/api/book_api.dart';
+import 'main_provider.dart';
 
 class Main_Screen extends StatefulWidget {
   Main_Screen({super.key});
@@ -15,67 +18,36 @@ class Main_Screen extends StatefulWidget {
   State<Main_Screen> createState() => _Main_ScreenState();
 }
 
-enum Status { initial, loading, fail, success }
-
 class _Main_ScreenState extends State<Main_Screen> {
-  final api = BookApi();
   final pref = BookPRef();
-  var _allBooks = [];
-  var _foundBooks = [];
-  var status = Status.initial;
+
   bool _iconBool = false;
 
-  var _searchController = TextEditingController();
+  final _searchController = TextEditingController();
+
+  var searchValue = "";
 
   @override
   void initState() {
-    _loadData();
-    // _foundBooks = _allBooks;
-
-    _searchController.addListener(() {
-      _runFilter(_searchController.text);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<BookProvider>().loadData(null);
     });
 
+    _searchController.addListener(() {
+      if(searchValue.isEmpty) {
+        context.read<BookProvider>().loadData(null);
+      }
+      searchValue = _searchController.text.toString();
+      context.read<BookProvider>().loadData(searchValue);
+    });
 
     super.initState();
   }
 
   @override
   void dispose() {
-
     _searchController.dispose();
-
     super.dispose();
-  }
-
-  Future<void> _loadData() async {
-    _iconBool = await pref.getMode();
-    setState(() {});
-    status = Status.loading;
-    setState(() {});
-    try {
-      _allBooks = await api.getList();
-      _foundBooks = _allBooks;
-      status = Status.success;
-    } catch (e) {
-      status = Status.fail;
-    }
-    setState(() {});
-  }
-
-  void _runFilter(String searchValue) {
-    var results = [];
-
-    if(searchValue.isEmpty) {
-      results = _allBooks;
-    } else {
-      results = _allBooks.where((element) => element['name'].toString().toLowerCase().contains(searchValue.toLowerCase()) ||
-          element['author'].toString().toLowerCase().contains(searchValue.toLowerCase())).toList();
-    }
-
-    setState(() {
-      _foundBooks = results;
-    });
   }
 
   /*final Map<int, Color> _yellow700Map = {
@@ -102,10 +74,7 @@ class _Main_ScreenState extends State<Main_Screen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: _iconBool ? _darkTheme : _lightTheme,
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(),
         body: SafeArea(
           child: Padding(
@@ -143,21 +112,24 @@ class _Main_ScreenState extends State<Main_Screen> {
                   child: TextField(
                     controller: _searchController,
                     focusNode: _focusNode,
+                    // onEditingComplete: () {
+                    //   context.read<BookProvider>().loadData(searchValue);
+                    // },
                     decoration: InputDecoration(
                       focusedBorder: InputBorder.none,
                       enabledBorder: InputBorder.none,
-                      suffixIcon: _searchController.text.length > 0 ? IconButton(onPressed: () {
+                      suffixIcon: _searchController.text.isNotEmpty ? IconButton(onPressed: () {
                             _searchController.clear();
                             setState(() {});
                         },
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.cancel,
                             color: Colors.grey,
                           )
                       ): null,
                       hintText: 'Book name or author...',
-                      prefixIcon: Icon(Icons.search, color: Color(0xFFC4C4C4)),
-                      hintStyle: TextStyle(
+                      prefixIcon: const Icon(Icons.search, color: Color(0xFFC4C4C4)),
+                      hintStyle: const TextStyle(
                         color: Color(0xFFC4C4C4),
                         fontSize: 14,
                       ),
@@ -167,7 +139,8 @@ class _Main_ScreenState extends State<Main_Screen> {
                 const SizedBox(height: 20),
                 Expanded(
                   child: Builder(builder: (context) {
-                    if (status == Status.loading) {
+                    final watcher = context.watch<BookProvider>();
+                    if (watcher.loading) {
                       return GridView.builder(
                         itemCount: 4,
                         padding: const EdgeInsets.all(5),
@@ -215,20 +188,20 @@ class _Main_ScreenState extends State<Main_Screen> {
                       );
                     }
 
-                    if (status == Status.fail) {
+                    if (watcher.error.isNotEmpty) {
                       return const Center(
                         child: Text("Xatolik", style: TextStyle(fontSize: 32)),
                       );
                     }
 
-                    if(_foundBooks.isEmpty) {
+                    if(watcher.list.isEmpty) {
                       return const Center(
                         child: Text("Kitob topilmadi", style: TextStyle(fontSize: 22)),
                       );
                     }
 
                     return GridView.builder(
-                      itemCount: _foundBooks.length,
+                      itemCount: watcher.list.length,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
@@ -237,12 +210,12 @@ class _Main_ScreenState extends State<Main_Screen> {
                         childAspectRatio: 0.55,
                       ),
                       itemBuilder: (BuildContext context, int index) {
-                        final model = _foundBooks[index];
+                        final model = watcher.list[index];
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context) {
-                              return DetailScreen(id: model['id']);
+                              return DetailScreen(id: model.id);
                             }));
                             _focusNode.unfocus();
                             // _searchController.dispose();
@@ -256,12 +229,12 @@ class _Main_ScreenState extends State<Main_Screen> {
                                     borderRadius: BorderRadius.circular(10)),
                                 clipBehavior: Clip.antiAlias,
                                 child: Image.network(
-                                  model["image"],
+                                  model.image,
                                   fit: BoxFit.cover,
                                 ),
                               )),
                               Text(
-                                model["name"],
+                                model.name,
                                 style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -269,7 +242,7 @@ class _Main_ScreenState extends State<Main_Screen> {
                                 maxLines: 1,
                               ),
                               Text(
-                                model["author"],
+                                model.author,
                                 maxLines: 1,
                                 style: const TextStyle(
                                     fontSize: 14,
@@ -319,7 +292,6 @@ class _Main_ScreenState extends State<Main_Screen> {
             ],
           ),
         ),
-      ),
     );
   }
 }

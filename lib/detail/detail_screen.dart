@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:book_app_flutter/core/api/book_api.dart';
+import 'package:book_app_flutter/core/api/book_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -24,7 +25,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
   final api = BookApi();
   var status = Status.initial;
-  Map details = {};
+  late BookModel book;
   var hasPdf = false;
   var path = "";
   var progress = 0;
@@ -37,7 +38,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
   Future<void> checkPdf() async {
     final dir = await getApplicationDocumentsDirectory();
-    path = "${dir.path}/${details["name"]}";
+    path = "${dir.path}/${book.name}";
     final file = File(path);
     hasPdf = await file.exists();
     setState(() {});
@@ -48,7 +49,7 @@ class _DetailScreenState extends State<DetailScreen> {
     setState(() {});
 
     try{
-      details = await api.getBookById(widget.id);
+      book = await api.getBookById(widget.id);
       status = Status.success;
     }catch(e) {
       status = Status.fail;
@@ -62,7 +63,7 @@ class _DetailScreenState extends State<DetailScreen> {
       return;
     }
     await Dio().download(
-      details["pdf"],
+      book.pdf,
       path,
       onReceiveProgress: (count, total) {
         progress = 100 * count ~/ total;
@@ -105,7 +106,7 @@ class _DetailScreenState extends State<DetailScreen> {
                           borderRadius: BorderRadius.circular(10)
                       ),
                       clipBehavior: Clip.antiAlias,
-                      child: Image.network(details["image"], fit: BoxFit.cover,),
+                      child: Image.network(book.image, fit: BoxFit.cover,),
                     ),
                   ],
                 ),
@@ -113,7 +114,7 @@ class _DetailScreenState extends State<DetailScreen> {
                 const SizedBox(height: 6),
 
                 Text(
-                  details["name"],
+                  book.name,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -121,14 +122,14 @@ class _DetailScreenState extends State<DetailScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  details["author"],
+                  book.author,
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
                 Text(
-                  details["author_desc"],
+                  book.author_desc,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w400,
