@@ -1,5 +1,4 @@
-import 'package:book_app_flutter/block/book_bloc.dart';
-import 'package:book_app_flutter/core/api/book_model.dart';
+import 'package:book_app_flutter/freezed/book_bloc.dart';
 import 'package:book_app_flutter/detail/detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,7 +7,6 @@ import 'package:shimmer/shimmer.dart';
 import 'package:book_app_flutter/pref/book_pref.dart';
 
 import '../core/api/book_api.dart';
-import 'main_provider.dart';
 
 class Main_Screen extends StatefulWidget {
   Main_Screen({super.key});
@@ -32,21 +30,12 @@ class _Main_ScreenState extends State<Main_Screen> {
 
   @override
   void initState() {
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   context.read<BookProvider>().loadData(null);
-    // });
 
-    bloc.add(LoadDataEvent(null));
+    bloc.add(BookEvent.loadData());
 
     _searchController.addListener(() {
-      // if(searchValue.isEmpty) {
-      //   context.read<BookProvider>().loadData(null);
-      // }
       searchValue = _searchController.text.toString();
-
-      // context.read<BookProvider>().loadData(searchValue);
-
-      bloc.add(LoadDataEvent(searchValue));
+      bloc.add(BookEvent.loadData(searchValue: searchValue));
     });
 
     super.initState();
@@ -188,7 +177,7 @@ class _Main_ScreenState extends State<Main_Screen> {
                         );
                       }
 
-                      if (state.message.isNotEmpty) {
+                      if (state.error.isNotEmpty) {
                         return const Center(
                           child: Text(
                               "Xatolik", style: TextStyle(fontSize: 32)),
